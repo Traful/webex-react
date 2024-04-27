@@ -1,0 +1,1 @@
+export const VITE_WEBEX_KEY = import.meta.env.VITE_WEBEX_KEY || "error";
