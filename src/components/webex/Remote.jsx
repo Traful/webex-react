@@ -8,6 +8,7 @@ const Remote = () => {
 
 	useEffect(() => {
 		if(wc.state.media.remoteVideo && refVideo.current) {
+			console.log("Ok video remoto");
 			refVideo.current.srcObject = wc.state.media.remoteVideo;
 		}
 		if(wc.state.media.remoteAudio && refAudio.current) {
@@ -16,9 +17,9 @@ const Remote = () => {
 	}, [wc.state.media.remoteVideo, wc.state.media.remoteAudio]);
 
 	return(
-		<div className="w-full h-full">
-			<audio ref={refVideo} autoPlay></audio>
-			<video ref={refAudio} className="w-full h-full bg-gray-800" autoPlay></video>
+		<div className="w-full h-full flex-auto">
+			<audio ref={refAudio} autoPlay></audio>
+			<video ref={refVideo} className="w-full h-full bg-gray-800" autoPlay></video>
 		</div>
 	);
 };

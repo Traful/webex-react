@@ -1,14 +1,11 @@
-import { useContext } from "react";
-import WebexContext from "./webex/webexstore/WebexContext";
+//{ webExMeetingKey: wc.state.webExMeetingKey, members: wc.state.members }
 
-const JsonData = () => {
-	const wc = useContext(WebexContext);
-
+const JsonData = ({ data }) => {
 	return(
 		<div className="">
 			<pre>
 				<code>
-					{ JSON.stringify(wc.state, null, 4) }
+					{ JSON.stringify(data, null, 4) }
 				</code>
 			</pre>
 			

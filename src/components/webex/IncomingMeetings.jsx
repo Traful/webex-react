@@ -8,8 +8,10 @@ const IncomingMeetings = () => {
 	const [reuniones, setReuniones] = useState([]);
 
 	useEffect(() => {
-		getDataMeetings(wc.state.webEx).then(data => setReuniones(data)).finally(setLoading(false));
-	}, [wc]);
+		if(wc.state.webEx) {
+			getDataMeetings(wc.state.webEx).then(data => setReuniones(data)).finally(setLoading(false));
+		}
+	}, [wc.state.webEx]);
 
 	const refresDataMeetings = () => {
 		setLoading(true);
@@ -19,7 +21,6 @@ const IncomingMeetings = () => {
 	const connectToReunion = async (key) => {
 		try {
 			await joinMeeting(wc, key);
-			//wc.dispatch({ type: SET_MEETING, payload: key });
 		} catch(error) {
 			console.log(error);
 		}
@@ -52,8 +53,7 @@ const IncomingMeetings = () => {
 				<ul>
 					{
 						reuniones.map((r) => {
-							console.log(r);
-							if(r.key === wc.state.webExMeeting) {
+							if(r.key === wc.state.webExMeetingKey) {
 								return (
 									<li className="p-1 bg-green-800 text-white rounded-sm cursor-pointer hover:bg-green-500 hover:text-black" key={r.key} onClick={() => leaveReunion(r.key)}>
 										{r.title}

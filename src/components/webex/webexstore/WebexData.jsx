@@ -18,7 +18,8 @@ const WebexData = (props) => {
 						access_token: VITE_WEBEX_KEY
 					}
 				});
-				//await webex.meetings.register();
+				await webex.meetings.register();
+				webex.meetings._toggleUnifiedMeetings(true); //V1: false o V2: true (Toggles meeting between old and new versions. (Does not apply to currently running meetings))
 				dispatch({ type: SET_WEBEX, payload: webex });
 			} catch(err) {
 				console.error(err);

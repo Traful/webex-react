@@ -8,6 +8,7 @@ const RegUnReg = () => {
 	const register = async () => {
 		try {
 			await wc.state.webEx.meetings.register();
+			wc.state.webEx.meetings._toggleUnifiedMeetings(true); //V1: false o V2: true (Toggles meeting between old and new versions. (Does not apply to currently running meetings))
 			setDisabled(true);
 			console.log("Se registro el componente!");
 		} catch(error) {

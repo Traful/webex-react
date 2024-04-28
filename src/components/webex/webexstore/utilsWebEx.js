@@ -1,9 +1,9 @@
 import { VITE_WEBEX_KEY } from "./../../../config";
-import { SET_MEETING, SET_MEMBERS, SET_LOCAL, SET_REMOTE_VIDEO, SET_REMOTE_AUDIO, SET_REMOTE_SHARE } from "./constants";
+import { SET_MEETING, SET_MEETING_KEY, SET_MEMBERS, SET_LOCAL, SET_REMOTE_VIDEO, SET_REMOTE_AUDIO, SET_REMOTE_SHARE, SET_DEVICES } from "./constants";
 
 export const getDataMeetings = async (webEx) => {
 	await webEx.meetings.syncMeetings();
-	let meetings = webEx.meetings.getAllMeetings();
+	let meetings = await webEx.meetings.getAllMeetings();
 	var buffer = [];
 	var keys = Object.keys(meetings);
 	for(let index = 0; index < keys.length; index++) {
@@ -80,7 +80,6 @@ const bindMeetingEvents = (dispatch, meeting) => {
 	});
 
 	meeting.members.on("members:update", async (res) => {
-		console.log("member update", res);
 		let buffer = [];
 		let { members } = meeting.members.membersCollection;
 		let keys = Object.keys(members);
@@ -121,17 +120,14 @@ export const joinMeeting = async (contexto, selectedMeetingId) => {
 		const { state, dispatch } = contexto;
 		const webex = state.webEx;
 
-		//var meetings = await webex.meetings.getAllMeetings();
-		//var meeting = meetings[selectedMeetingId];
-
 		var meeting = await webex.meetings.getAllMeetings()[selectedMeetingId];
 		
-		console.log(meeting);
-
 		if(!meeting) {
 			throw new Error(`La reunión ${selectedMeetingId} no es válida o ya ha concluido.`);
 		}
+
 		bindMeetingEvents(dispatch, meeting);
+
 		meeting.join()
 		.then(() => {
 			const mediaSettings = {
@@ -142,6 +138,10 @@ export const joinMeeting = async (contexto, selectedMeetingId) => {
 				sendAudio: true,
 				sendShare: false
 			};
+
+
+			//localMedia.cameraStream = await webex.meetings.mediaHelpers.createCameraStream(videoConstraints);
+			//localMedia.microphoneStream = await webex.meetings.mediaHelpers.createMicrophoneStream(audioConstraints);
 
 			return meeting.getMediaStreams(mediaSettings).then((mediaStreams) => {
 				const [localStream, localShare] = mediaStreams;
@@ -166,6 +166,7 @@ export const joinMeeting = async (contexto, selectedMeetingId) => {
 		})
 		.then(() => {
 			dispatch({ type: SET_MEETING, payload: meeting });
+			dispatch({ type: SET_MEETING_KEY, payload: selectedMeetingId });
 		})
 		.catch((error) => console.log("salida por catch", error));
 	} catch(error) {
@@ -178,14 +179,18 @@ export const leaveMeeting = async (contexto, selectedMeetingId) => {
 		const { state, dispatch } = contexto;
 		const webex = state.webEx;
 
-		var meetings = await webex.meetings.getAllMeetings();
-		var meeting = meetings[selectedMeetingId];
+		var meeting = webex.meetings.getAllMeetings()[selectedMeetingId];
 		if(!meeting) {
 			throw new Error(`La reunión ${selectedMeetingId} no es válida o ya ha concluido.`);
 		}
 
 		await meeting.leave();
+
 		dispatch({ type: SET_MEETING, payload: null });
+		/*
+		dispatch({ type: SET_MEETING_KEY, payload: null });
+		dispatch({ type: SET_MEMBERS, payload: [] });
+		*/
 	} catch (error) {
 		console.log(error);
 	}
@@ -228,4 +233,38 @@ export const generateWebexConfig = ({credentials}) => {
 		credentials,
 		// Any other sdk config we need
 	};
+}
+
+export const getMediaDevices = async (contexto) => {
+	const { state, dispatch } = contexto;
+	if(state.webExMeeting && state.webEx) {
+		
+		//let devices = await webEx.meetings.mediaHelpers.getDevices();
+		let devices = await state.webExMeeting.getDevices();
+		
+		let bufferAudioInput = [];
+		let bufferAudioOutput = [];
+		let bufferVideoInput = [];
+
+		devices.forEach((device) => {
+			switch (device.kind) {
+				case 'audioinput':
+					bufferAudioInput.push(device);
+					break;
+				case 'audiooutput':
+					bufferAudioOutput.push(device);
+					break;
+				case 'videoinput':
+					bufferVideoInput.push(device);
+					break;
+			}
+		});
+		dispatch({ type: SET_DEVICES, payload: {
+			bufferAudioInput: bufferAudioInput,
+			bufferAudioOutput: bufferAudioOutput,
+			bufferVideoInput: bufferVideoInput
+		} })
+	} else {
+		console.log("No hay reunion activa!");
+	}
 }
