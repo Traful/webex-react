@@ -1,24 +1,31 @@
 import WebexData from "./webexstore/WebexData";
+import WebEx from "./WebEx";
+
+import RemoteAudio from "./RemoteAudio";
 import IncomingMeetings from "./IncomingMeetings";
 import Members from "./Members";
-import Remote from "./Remote";
+import RemoteVideo from "./RemoteVideo";
 import Devices from "./Devices";
-import Local from "./Local";
+import LocalVideo from "./LocalVideo";
+
 
 const Call = () => {
 	return(
 		<WebexData>
-			<div className="flex gap-2 min-h-screen">
-				<div className="bg-green-200 p-2">
-					<IncomingMeetings />
-					<Members />
+			<WebEx>
+				<RemoteAudio />
+				<div className="flex gap-2 min-h-screen">
+					<div className="bg-green-200 p-2 min-w-80">
+						<IncomingMeetings />
+						<Members />
+					</div>
+					<div className="min-h-screen w-full flex flex-col">
+						<RemoteVideo />
+						<Devices />
+					</div>
 				</div>
-				<div className="min-h-screen w-full flex flex-col">
-					<Remote />
-					<Devices />
-				</div>
-			</div>
-			<Local />
+				<LocalVideo />
+			</WebEx>
 		</WebexData>
 	);
 };
