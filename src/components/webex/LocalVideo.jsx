@@ -14,7 +14,7 @@ const LocalVideo = () => {
 	return(
 		<>
 			<div className="w-72 h-36 fixed right-2 bottom-2 bg-black border border-gray-300">
-				<video ref={refLocal} className="w-full h-full object-cover" autoPlay></video>
+				<video ref={refLocal} className="w-full h-full object-cover" muted autoPlay></video>
 			</div>
 		</>
 	);

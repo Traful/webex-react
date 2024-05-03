@@ -19,7 +19,10 @@ const reducer = (state, action) => {
 				members: []
 			});
 		case SET_MEDIA:
-			return ({ ...state, media: action.payload });
+			return ({ ...state, media: {
+				...state.media,
+				[action.payload.field]: action.payload.value
+			} });
 		case SET_MEMBERS:
 			return ({ ...state, members: action.payload });
 		case SET_SINK_ID:

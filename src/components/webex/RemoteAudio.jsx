@@ -2,7 +2,9 @@ import { useContext, useEffect, useRef } from "react";
 import WebexContext from "./webexstore/WebexContext";
 
 const attachSinkId = async (element, sinkId) => {
+	
 	console.log(element, sinkId);
+
 	if(typeof element.sinkId !== "undefined") {
 		try {
 			await element.setSinkId(sinkId);

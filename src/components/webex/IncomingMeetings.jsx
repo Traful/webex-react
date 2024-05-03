@@ -67,24 +67,10 @@ const IncomingMeetings = () => {
 			//Bind eventos
 			objMeeting.on("media:ready", (media) => {
 				if(media) {
-					let newState = ({ ...wc.state.media });
-					switch(media.type) {
-						case "local":
-							newState.local = media.stream;
-							break;
-						case "remoteVideo":
-							newState.remoteVideo = media.stream;
-							break;
-						case "remoteAudio":
-							newState.remoteAudio = media.stream;
-							break;
-						case "remoteShare":
-							newState.remoteShare = media.stream;
-							break;
-						default:
-							console.log(`El medio ${media.type} no tiene handler!`);
-					}
-					wc.dispatch({ type: SET_MEDIA, payload: newState });
+					wc.dispatch({ type: SET_MEDIA, payload: {
+						field: media.type,
+						value: media.stream
+					}});
 				}
 			});
 			objMeeting.on("media:stopped", (media) => {
@@ -130,7 +116,6 @@ const IncomingMeetings = () => {
 					}
 					*/
 				}
-				console.log(buffer);
 				wc.dispatch({ type: SET_MEMBERS, payload: buffer });
 			});
 
@@ -138,7 +123,7 @@ const IncomingMeetings = () => {
 			const mediaSettings = {
 				receiveVideo: true,
 				receiveAudio: true,
-				receiveShare: false,
+				receiveShare: true,
 				sendVideo: true,
 				sendAudio: true,
 				sendShare: false
@@ -200,7 +185,6 @@ const IncomingMeetings = () => {
 				<ul>
 					{
 						reuniones.map((r) => {
-							console.log(r.key);
 							if(r.key === wc.state.webExMeetingKey) {
 								return (
 									<li className="p-1 bg-green-800 text-white rounded-sm cursor-pointer hover:bg-green-500 hover:text-black" key={r.key} onClick={leaveReunion}>
